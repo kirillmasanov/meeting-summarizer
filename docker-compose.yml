@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  meeting-summarizer:
+    build: .
+    container_name: meeting-summarizer
+    ports:
+      - "${SERVER_PORT:-8000}:8000"
+    environment:
+      - YANDEX_API_KEY=${YANDEX_API_KEY}
+      - FOLDER_ID=${FOLDER_ID}
+      - LLM_MODEL=${LLM_MODEL:-qwen3-235b-a22b-fp8/latest}
+      - SERVER_PORT=8000
+    volumes:
+      # Монтируем директории для сохранения данных между перезапусками
+      - ./uploads:/app/uploads
+      - ./temp:/app/temp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/prompt"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
