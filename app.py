@@ -543,6 +543,11 @@ async def process_video_task(session_id: str, task_id: str, video_path: Path, sy
             task.updated_at = datetime.now()
 
 
+@app.get("/health")
+async def healthcheck():
+    return {"status": "ok"}
+
+
 @app.get("/")
 async def root():
     """Главная страница"""
